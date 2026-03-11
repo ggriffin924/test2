@@ -7,8 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * and ask the Gemini CLI to update this list.
      */
     const realStudents = [
-        // AI will add students here, for example:
-        // { name: 'Griffin Odwyer', image: 'student_profiles/Griffin Odwyer.png', role: 'Workshop Lead', skills: ['AI', 'GitHub', 'CLI'] }
+        { 
+            name: 'Griffin Odwyer', 
+            image: 'student_profiles/Griffin Odwyer.png', 
+            role: 'Course Instructor', 
+            skills: ['AI Engineering', 'Fullstack Development', 'System Architecture'] 
+        }
     ];
 
     const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
@@ -45,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * SECTION 3: RENDERING LOGIC
      */
     const renderStudents = (real, mock) => {
-        const allStudents = [...real, ...mock];
+        // If there are real students, ONLY show them. Otherwise, show mocks.
+        const allStudents = real.length > 0 ? real : mock;
         studentGrid.innerHTML = allStudents.map((student, index) => `
             <div class="student-card" style="animation-delay: ${index * 0.1}s">
                 <div class="profile-image-container">
