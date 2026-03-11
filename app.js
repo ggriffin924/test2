@@ -2,32 +2,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentGrid = document.getElementById('student-grid');
     const searchInput = document.getElementById('search-input');
     const roleFilter = document.getElementById('role-filter');
+    const sortBy = document.getElementById('sort-by');
     const resultsCount = document.getElementById('results-count');
-    const themeButtons = document.querySelectorAll('.theme-btn');
+    const themeToggle = document.getElementById('theme-toggle');
+    const toastContainer = document.getElementById('toast-container');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
     
     let allStudents = [];
 
     /**
      * SECTION 1: DATA LOADING
-     * We now check for window.STUDENT_DATA which is set by students-data.js.
-     * This avoids CORS issues when opening the file locally.
      */
     const loadStudents = () => {
         if (window.STUDENT_DATA && window.STUDENT_DATA.length > 0) {
             allStudents = window.STUDENT_DATA;
-            console.log('✅ Loaded real students from students-data.js');
         } else {
-            console.warn('⚠️ Falling back to mock students...');
             allStudents = generateMockStudents(8);
         }
     };
 
-    const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
-    const lastNames = ['Smith', 'Chen', 'Rodriguez', 'Kim', 'Gomez', 'Taylor', 'Wilson', 'Lee'];
-    const rolesList = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
-    const skillsList = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
-
     const generateMockStudents = (count) => {
+        const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
+        const lastNames = ['Smith', 'Chen', 'Rodriguez', 'Kim', 'Gomez', 'Taylor', 'Wilson', 'Lee'];
+        const rolesList = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
+        const skillsList = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
+        
         const students = [];
         for (let i = 0; i < count; i++) {
             const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 role: rolesList[Math.floor(Math.random() * rolesList.length)],
                 initials: firstName[0] + lastName[0],
                 skills: studentSkills,
-                isMock: true
+                timestamp: Date.now() - Math.random() * 10000000
             });
         }
         return students;
@@ -71,43 +71,86 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="skills-tags">
                     ${student.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
                 </div>
+                <div class="student-actions">
+                    <button class="action-btn" onclick="showToast('Viewing profile of ${student.name}')" title="View Profile">
+                        <i data-lucide="user"></i>
+                    </button>
+                    <button class="action-btn" onclick="showToast('Message sent to ${student.name}')" title="Send Message">
+                        <i data-lucide="mail"></i>
+                    </button>
+                    <button class="action-btn" onclick="showToast('Skills endorsed for ${student.name}')" title="Endorse Skills">
+                        <i data-lucide="award"></i>
+                    </button>
+                </div>
             </div>
         `).join('');
 
         resultsCount.innerText = `Showing ${filteredList.length} Student${filteredList.length === 1 ? '' : 's'}`;
+        
+        // Re-initialize icons for new cards
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     };
 
-    const filterStudents = () => {
+    const filterAndSortStudents = () => {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedRole = roleFilter.value;
+        const sortOrder = sortBy.value;
 
-        const filtered = allStudents.filter(student => {
+        let filtered = allStudents.filter(student => {
             const matchesSearch = student.name.toLowerCase().includes(searchTerm) || 
                                  student.skills.some(s => s.toLowerCase().includes(searchTerm));
             const matchesRole = selectedRole === 'all' || student.role === selectedRole;
             return matchesSearch && matchesRole;
         });
 
+        // Sorting Logic
+        if (sortOrder === 'name') {
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortOrder === 'role') {
+            filtered.sort((a, b) => a.role.localeCompare(b.role));
+        } else if (sortOrder === 'newest') {
+            filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        }
+
         renderStudents(filtered);
     };
 
-    // Listeners for Search and Filter
-    searchInput.addEventListener('input', filterStudents);
-    roleFilter.addEventListener('change', filterStudents);
-
     /**
-     * SECTION 3: THEME SWAPPING
+     * SECTION 3: THEME & UI LOGIC
      */
-    themeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const theme = btn.getAttribute('data-theme');
-            document.body.setAttribute('data-theme', theme);
-            themeButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
+        
+        document.body.setAttribute('data-theme', newTheme);
+        sunIcon.style.display = isDark ? 'block' : 'none';
+        moonIcon.style.display = isDark ? 'none' : 'block';
+        
+        showToast(`Switching to ${newTheme} mode...`);
     });
+
+    window.showToast = (message) => {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<i data-lucide="check-circle"></i> <span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        
+        if (window.lucide) lucide.createIcons();
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    };
+
+    // Listeners
+    searchInput.addEventListener('input', filterAndSortStudents);
+    roleFilter.addEventListener('change', filterAndSortStudents);
+    sortBy.addEventListener('change', filterAndSortStudents);
 
     // Initial Load & Render
     loadStudents();
-    renderStudents(allStudents);
+    filterAndSortStudents();
 });

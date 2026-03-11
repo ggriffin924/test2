@@ -5,13 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body data-theme="blue">
+<body data-theme="light">
     <div class="background-glow"></div>
+    
+    <!-- Status Toast Notifications -->
+    <div id="toast-container"></div>
+
     <div class="dashboard-container">
         <header>
-            <h1>Class of 2026: AI Innovators</h1>
-            <p id="current-task">Current Workshop Phase: <span>Collaborative Development</span></p>
+            <div class="header-main">
+                <div class="title-group">
+                    <h1>Class of 2026: AI Innovators</h1>
+                    <p id="current-task">Current Workshop Phase: <span>Collaborative Development</span></p>
+                </div>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Light/Dark Mode">
+                        <i data-lucide="sun" id="sun-icon"></i>
+                        <i data-lucide="moon" id="moon-icon" style="display: none;"></i>
+                    </button>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -49,16 +65,15 @@
                                 <option value="Course Instructor">Course Instructor</option>
                             </select>
                         </div>
-
-                        <!-- Theme Toggle (Interactive) -->
+                        
+                        <!-- Extra Interactive Dropdown -->
                         <div class="control-group">
-                            <label>System Theme</label>
-                            <div class="theme-toggles">
-                                <button class="theme-btn active" data-theme="blue" title="Cyber Blue"></button>
-                                <button class="theme-btn" data-theme="purple" title="Deep Purple"></button>
-                                <button class="theme-btn" data-theme="emerald" title="Emerald Matrix"></button>
-                                <button class="theme-btn" data-theme="sunset" title="Sunset Amber"></button>
-                            </div>
+                            <label for="sort-by">Sort By</label>
+                            <select id="sort-by">
+                                <option value="name">Name (A-Z)</option>
+                                <option value="role">Role</option>
+                                <option value="newest">Newest Added</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -66,10 +81,14 @@
         </main>
         
         <footer>
-            <p>Created with ✨ <strong>Gemini CLI</strong> ✨ | AI Command Center Ready</p>
+            <p>Created with ✨ <strong>Gemini CLI</strong> ✨ | Interactive Dashboard v2.0</p>
         </footer>
     </div>
     <script src="students-data.js"></script>
     <script src="app.js"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>
