@@ -22,10 +22,13 @@
                     <p id="current-task">Current Workshop Phase: <span>Collaborative Development</span></p>
                 </div>
                 <div class="header-actions">
-                    <button id="theme-toggle" class="icon-btn" title="Toggle Light/Dark Mode">
-                        <i data-lucide="sun" id="sun-icon"></i>
-                        <i data-lucide="moon" id="moon-icon" style="display: none;"></i>
-                    </button>
+                    <div class="theme-selector">
+                        <label for="theme-select">Theme</label>
+                        <select id="theme-select">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </header>

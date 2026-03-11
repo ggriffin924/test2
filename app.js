@@ -4,10 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const roleFilter = document.getElementById('role-filter');
     const sortBy = document.getElementById('sort-by');
     const resultsCount = document.getElementById('results-count');
-    const themeToggle = document.getElementById('theme-toggle');
+    const themeSelect = document.getElementById('theme-select');
     const toastContainer = document.getElementById('toast-container');
-    const sunIcon = document.getElementById('sun-icon');
-    const moonIcon = document.getElementById('moon-icon');
     
     let allStudents = [];
 
@@ -120,14 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * SECTION 3: THEME & UI LOGIC
      */
-    themeToggle.addEventListener('click', () => {
-        const isDark = document.body.getAttribute('data-theme') === 'dark';
-        const newTheme = isDark ? 'light' : 'dark';
-        
+    themeSelect.addEventListener('change', (e) => {
+        const newTheme = e.target.value;
         document.body.setAttribute('data-theme', newTheme);
-        sunIcon.style.display = isDark ? 'block' : 'none';
-        moonIcon.style.display = isDark ? 'none' : 'block';
-        
         showToast(`Switching to ${newTheme} mode...`);
     });
 
