@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Griffin Odwyer",
+        "image": "student_profiles/Griffin Odwyer.png",
+        "role": "Course Instructor",
+        "skills": [
+            "AI Engineering",
+            "Fullstack Development",
+            "System Architecture"
+        ]
+    },
+    {
+        "name": "Kevin Samples",
+        "image": "student_profiles/Kevin Samples.png",
+        "role": "AI Researcher",
+        "skills": [
+            "Figma",
+            "Python",
+            "React"
+        ]
+    },
+    {
+        "name": "Susan Hunt",
+        "image": "student_profiles/Susan Hunt.png",
+        "role": "AI Researcher",
+        "skills": [
+            "PyTorch",
+            "Python",
+            "Figma"
+        ]
+    }
+]

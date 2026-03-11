@@ -1,21 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const studentGrid = document.getElementById('student-grid');
     const searchInput = document.getElementById('search-input');
     const roleFilter = document.getElementById('role-filter');
     const resultsCount = document.getElementById('results-count');
     const themeButtons = document.querySelectorAll('.theme-btn');
     
+    let allStudents = [];
+
     /**
-     * SECTION 1: DATA CONFIGURATION
+     * SECTION 1: DATA LOADING
      */
-    const realStudents = [
-        { 
-            name: 'Griffin Odwyer', 
-            image: 'student_profiles/Griffin Odwyer.png', 
-            role: 'Course Instructor', 
-            skills: ['AI Engineering', 'Fullstack Development', 'System Architecture'] 
+    const loadStudents = async () => {
+        try {
+            // Attempt to fetch real students from the generated JSON
+            const response = await fetch('students.json');
+            if (!response.ok) throw new Error('No real students found');
+            allStudents = await response.json();
+            console.log('✅ Loaded real students from JSON');
+        } catch (e) {
+            console.warn('⚠️ Falling back to mock students...');
+            allStudents = generateMockStudents(8);
         }
-    ];
+    };
 
     const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
     const lastNames = ['Smith', 'Chen', 'Rodriguez', 'Kim', 'Gomez', 'Taylor', 'Wilson', 'Lee'];
@@ -32,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const skill = skillsList[Math.floor(Math.random() * skillsList.length)];
                 if (!studentSkills.includes(skill)) studentSkills.push(skill);
             }
-            
             students.push({
                 name: `${firstName} ${lastName}`,
                 role: rolesList[Math.floor(Math.random() * rolesList.length)],
@@ -43,9 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return students;
     };
-
-    const mockStudents = generateMockStudents(8);
-    const allStudents = [...realStudents, ...mockStudents];
 
     /**
      * SECTION 2: RENDERING & FILTERING
@@ -101,13 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
             document.body.setAttribute('data-theme', theme);
-            
-            // Update active state
             themeButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         });
     });
 
-    // Initial Render
+    // Initial Load & Render
+    await loadStudents();
     renderStudents(allStudents);
 });
