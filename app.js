@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const studentGrid = document.getElementById('student-grid');
+    const searchInput = document.getElementById('search-input');
+    const roleFilter = document.getElementById('role-filter');
+    const resultsCount = document.getElementById('results-count');
+    const themeButtons = document.querySelectorAll('.theme-btn');
     
     /**
      * SECTION 1: DATA CONFIGURATION
-     * In a real workshop, students will drop images into 'student_profiles/' 
-     * and ask the Gemini CLI to update this list.
      */
     const realStudents = [
         { 
@@ -17,12 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
     const lastNames = ['Smith', 'Chen', 'Rodriguez', 'Kim', 'Gomez', 'Taylor', 'Wilson', 'Lee'];
-    const roles = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
-    const skills = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
+    const rolesList = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
+    const skillsList = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
 
-    /**
-     * SECTION 2: MOCK STUDENT GENERATION
-     */
     const generateMockStudents = (count) => {
         const students = [];
         for (let i = 0; i < count; i++) {
@@ -30,13 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
             const studentSkills = [];
             for (let j = 0; j < 3; j++) {
-                const skill = skills[Math.floor(Math.random() * skills.length)];
+                const skill = skillsList[Math.floor(Math.random() * skillsList.length)];
                 if (!studentSkills.includes(skill)) studentSkills.push(skill);
             }
             
             students.push({
                 name: `${firstName} ${lastName}`,
-                role: roles[Math.floor(Math.random() * roles.length)],
+                role: rolesList[Math.floor(Math.random() * rolesList.length)],
                 initials: firstName[0] + lastName[0],
                 skills: studentSkills,
                 isMock: true
@@ -45,14 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return students;
     };
 
+    const mockStudents = generateMockStudents(8);
+    const allStudents = [...realStudents, ...mockStudents];
+
     /**
-     * SECTION 3: RENDERING LOGIC
+     * SECTION 2: RENDERING & FILTERING
      */
-    const renderStudents = (real, mock) => {
-        // If there are real students, ONLY show them. Otherwise, show mocks.
-        const allStudents = real.length > 0 ? real : mock;
-        studentGrid.innerHTML = allStudents.map((student, index) => `
-            <div class="student-card" style="animation-delay: ${index * 0.1}s">
+    const renderStudents = (filteredList) => {
+        if (filteredList.length === 0) {
+            studentGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No students found matching your criteria.</div>`;
+            resultsCount.innerText = `0 Students Found`;
+            return;
+        }
+
+        studentGrid.innerHTML = filteredList.map((student, index) => `
+            <div class="student-card" style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${index * 0.05}s">
                 <div class="profile-image-container">
                     ${student.image 
                         ? `<img src="${student.image}" alt="${student.name}" class="profile-image">`
@@ -66,44 +72,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+
+        resultsCount.innerText = `Showing ${filteredList.length} Student${filteredList.length === 1 ? '' : 's'}`;
     };
 
-    const mockStudents = generateMockStudents(8);
-    renderStudents(realStudents, mockStudents);
+    const filterStudents = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedRole = roleFilter.value;
+
+        const filtered = allStudents.filter(student => {
+            const matchesSearch = student.name.toLowerCase().includes(searchTerm) || 
+                                 student.skills.some(s => s.toLowerCase().includes(searchTerm));
+            const matchesRole = selectedRole === 'all' || student.role === selectedRole;
+            return matchesSearch && matchesRole;
+        });
+
+        renderStudents(filtered);
+    };
+
+    // Listeners for Search and Filter
+    searchInput.addEventListener('input', filterStudents);
+    roleFilter.addEventListener('change', filterStudents);
 
     /**
-     * SECTION 4: ENGAGEMENT CHART
+     * SECTION 3: THEME SWAPPING
      */
-    const ctx = document.getElementById('engagementChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
-    gradient.addColorStop(1, 'rgba(192, 132, 252, 0)');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Student Activity Index',
-                data: [65, 78, 90, 85, 95, 70, 88],
-                borderColor: '#c084fc',
-                borderWidth: 4,
-                tension: 0.4,
-                fill: true,
-                backgroundColor: gradient,
-                pointBackgroundColor: '#c084fc',
-                pointBorderColor: '#fff',
-                pointHoverRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-            }
-        }
+    themeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', theme);
+            
+            // Update active state
+            themeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
     });
+
+    // Initial Render
+    renderStudents(allStudents);
 });

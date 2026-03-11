@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body data-theme="blue">
     <div class="background-glow"></div>
     <div class="dashboard-container">
         <header>
@@ -22,19 +20,53 @@
                 <!-- Dynamically populated by app.js -->
             </section>
 
-            <!-- Chart Section -->
-            <section class="chart-section">
-                <div class="chart-card">
-                    <h3>Student Engagement Trends</h3>
-                    <div class="chart-container">
-                        <canvas id="engagementChart"></canvas>
+            <!-- AI Command Center (Interactive Controls) -->
+            <section class="control-panel">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h3>AI Command Center</h3>
+                        <span id="results-count">Showing All Students</span>
+                    </div>
+                    
+                    <div class="panel-grid">
+                        <!-- Search Bar -->
+                        <div class="control-group">
+                            <label for="search-input">Search Students</label>
+                            <input type="text" id="search-input" placeholder="Enter name or skill...">
+                        </div>
+
+                        <!-- Role Filter Dropdown -->
+                        <div class="control-group">
+                            <label for="role-filter">Filter by AI Role</label>
+                            <select id="role-filter">
+                                <option value="all">All Roles</option>
+                                <option value="Frontend Developer">Frontend Developer</option>
+                                <option value="AI Researcher">AI Researcher</option>
+                                <option value="UI Designer">UI Designer</option>
+                                <option value="Backend Engineer">Backend Engineer</option>
+                                <option value="Data Scientist">Data Scientist</option>
+                                <option value="Fullstack Dev">Fullstack Dev</option>
+                                <option value="Course Instructor">Course Instructor</option>
+                            </select>
+                        </div>
+
+                        <!-- Theme Toggle (Interactive) -->
+                        <div class="control-group">
+                            <label>System Theme</label>
+                            <div class="theme-toggles">
+                                <button class="theme-btn active" data-theme="blue" title="Cyber Blue"></button>
+                                <button class="theme-btn" data-theme="purple" title="Deep Purple"></button>
+                                <button class="theme-btn" data-theme="emerald" title="Emerald Matrix"></button>
+                                <button class="theme-btn" data-theme="sunset" title="Sunset Amber"></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         </main>
         
         <footer>
-            <p>Created with ✨ <strong>Gemini CLI</strong> ✨ | Refactored for Personalized Learning</p>
+            <p>Created with ✨ <strong>Gemini CLI</strong> ✨ | AI Command Center Ready</p>
         </footer>
     </div>
     <script src="app.js"></script>
