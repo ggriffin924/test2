@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const studentGrid = document.getElementById('student-grid');
     const searchInput = document.getElementById('search-input');
     const roleFilter = document.getElementById('role-filter');
@@ -9,15 +9,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     /**
      * SECTION 1: DATA LOADING
+     * We now check for window.STUDENT_DATA which is set by students-data.js.
+     * This avoids CORS issues when opening the file locally.
      */
-    const loadStudents = async () => {
-        try {
-            // Attempt to fetch real students from the generated JSON
-            const response = await fetch('students.json');
-            if (!response.ok) throw new Error('No real students found');
-            allStudents = await response.json();
-            console.log('✅ Loaded real students from JSON');
-        } catch (e) {
+    const loadStudents = () => {
+        if (window.STUDENT_DATA && window.STUDENT_DATA.length > 0) {
+            allStudents = window.STUDENT_DATA;
+            console.log('✅ Loaded real students from students-data.js');
+        } else {
             console.warn('⚠️ Falling back to mock students...');
             allStudents = generateMockStudents(8);
         }
@@ -109,6 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Initial Load & Render
-    await loadStudents();
+    loadStudents();
     renderStudents(allStudents);
 });
