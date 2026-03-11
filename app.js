@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
         'Analog Photography', 'Mechanical Keyboard Building', 'Geocaching'
     ];
 
+    const bioSnippets = [
+        "Passionate about building intuitive user interfaces and exploring new AI frontier technologies.",
+        "Always looking for ways to bridge the gap between creative design and robust engineering.",
+        "Lifelong learner dedicated to mastering the latest frameworks and contributing to open-source projects.",
+        "Enjoys solving complex problems with simple, elegant code and a collaborative mindset."
+    ];
+
     const rolesList = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
     const skillsList = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
 
@@ -27,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (storedData) {
             const savedStudents = JSON.parse(storedData);
-            // Merge saved data with base data to preserve persistence
             allStudents = baseData.map(student => {
                 const saved = savedStudents.find(s => s.name === student.name);
                 return saved ? { ...student, ...saved } : initStudent(student);
@@ -40,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initStudent = (student) => ({
         ...student,
-        id: student.id || Math.random().toString(36).substr(2, 9),
+        id: student.id || 'id-' + Math.random().toString(36).substr(2, 9),
         hobby: student.hobby || hobbiesList[Math.floor(Math.random() * hobbiesList.length)],
+        bio: student.bio || bioSnippets[Math.floor(Math.random() * bioSnippets.length)],
         endorsements: student.endorsements || 0,
         role: student.role || rolesList[Math.floor(Math.random() * rolesList.length)],
         skills: student.skills || getRandomSkills(3),
@@ -93,20 +100,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <h2>${student.name}</h2>
-                <span class="student-hobby">Fave Hobby: ${student.hobby}</span>
                 <span class="student-role">${student.role}</span>
+                
+                <!-- Expandable Dropdown Section -->
+                <div class="profile-dropdown" id="dropdown-${student.id}">
+                    <div class="dropdown-content">
+                        <h4>About</h4>
+                        <p>${student.bio}</p>
+                        <div class="dropdown-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Favorite Hobby</span>
+                                <span class="stat-value">${student.hobby}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Member Since</span>
+                                <span class="stat-value">March 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="skills-tags">
                     ${student.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
                 </div>
                 <div class="student-actions">
-                    <button class="action-btn" onclick="regenerateStudent('${student.id}')" title="Regenerate Profile">
-                        <i data-lucide="refresh-cw"></i>
+                    <button class="action-btn" onclick="toggleProfile('${student.id}')" title="View Profile">
+                        <i data-lucide="user"></i>
                     </button>
                     <button class="action-btn" onclick="endorseStudent('${student.id}', event)" title="Endorse Skills">
                         <i data-lucide="zap"></i>
                     </button>
                     <button class="action-btn" onclick="showToast('Message sent to ${student.name}')" title="Send Message">
                         <i data-lucide="mail"></i>
+                    </button>
+                    <button class="action-btn regenerate-btn" onclick="regenerateStudent('${student.id}')" title="Regenerate Profile">
+                        <i data-lucide="refresh-cw"></i>
                     </button>
                 </div>
             </div>
@@ -118,19 +146,36 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * SECTION 3: ACTIONS
      */
+    window.toggleProfile = (id) => {
+        const dropdown = document.getElementById(`dropdown-${id}`);
+        const allDropdowns = document.querySelectorAll('.profile-dropdown');
+        
+        // Accordion effect: Close others
+        allDropdowns.forEach(d => {
+            if (d.id !== `dropdown-${id}`) d.classList.remove('expanded');
+        });
+
+        dropdown.classList.toggle('expanded');
+    };
+
     window.regenerateStudent = (id) => {
+        console.log('Regenerating student:', id);
         const idx = allStudents.findIndex(s => s.id === id);
         if (idx === -1) return;
 
-        const btn = document.querySelector(`#card-${id} .action-btn i[data-lucide="refresh-cw"]`).parentElement;
+        const card = document.getElementById(`card-${id}`);
+        const btn = card.querySelector('.regenerate-btn');
         btn.classList.add('rotate');
 
         setTimeout(() => {
             allStudents[idx].role = rolesList[Math.floor(Math.random() * rolesList.length)];
             allStudents[idx].hobby = hobbiesList[Math.floor(Math.random() * hobbiesList.length)];
+            allStudents[idx].bio = bioSnippets[Math.floor(Math.random() * bioSnippets.length)];
             allStudents[idx].skills = getRandomSkills(3);
+            
             saveToStorage();
-            filterAndSortStudents();
+            filterAndSortStudents(); // Re-render
+            
             showToast(`Regenerated ${allStudents[idx].name}'s profile!`);
         }, 600);
     };
@@ -142,19 +187,17 @@ document.addEventListener('DOMContentLoaded', () => {
         allStudents[idx].endorsements++;
         saveToStorage();
 
-        // UI Update
         const badge = document.getElementById(`badge-${id}`);
         badge.querySelector('span').innerText = allStudents[idx].endorsements;
         badge.classList.add('pop');
         setTimeout(() => badge.classList.remove('pop'), 200);
 
-        // Effects
         createParticles(event.clientX, event.clientY);
         showToast(`Endorsed ${allStudents[idx].name}!`);
     };
 
     const createParticles = (x, y) => {
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 15; i++) {
             const p = document.createElement('div');
             p.className = 'particle';
             const size = Math.random() * 8 + 4;

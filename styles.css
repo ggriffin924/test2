@@ -236,7 +236,68 @@ body[data-theme="dark"] #theme-select {
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 1rem;
+    margin: 0 0.5rem;
+    text-align: left;
+    opacity: 0;
+}
+
+body[data-theme="dark"] .profile-dropdown {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.profile-dropdown.expanded {
+    max-height: 350px;
     margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    opacity: 1;
+    border: 1px solid var(--glass-border);
+}
+
+.dropdown-content h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.dropdown-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.dropdown-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .skill-tag {
