@@ -1,13 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     const studentGrid = document.getElementById('student-grid');
     
-    // Mock Data Generators
+    /**
+     * SECTION 1: DATA CONFIGURATION
+     * In a real workshop, students will drop images into 'student_profiles/' 
+     * and ask the Gemini CLI to update this list.
+     */
+    const realStudents = [
+        // AI will add students here, for example:
+        // { name: 'Griffin Odwyer', image: 'student_profiles/Griffin Odwyer.png', role: 'Workshop Lead', skills: ['AI', 'GitHub', 'CLI'] }
+    ];
+
     const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Skyler', 'Quinn'];
     const lastNames = ['Smith', 'Chen', 'Rodriguez', 'Kim', 'Gomez', 'Taylor', 'Wilson', 'Lee'];
     const roles = ['Frontend Developer', 'AI Researcher', 'UI Designer', 'Backend Engineer', 'Data Scientist', 'Fullstack Dev'];
     const skills = ['React', 'Python', 'Node.js', 'PyTorch', 'Figma', 'TypeScript', 'Docker', 'Gemini API'];
 
-    const generateStudents = (count) => {
+    /**
+     * SECTION 2: MOCK STUDENT GENERATION
+     */
+    const generateMockStudents = (count) => {
         const students = [];
         for (let i = 0; i < count; i++) {
             const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -22,17 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: `${firstName} ${lastName}`,
                 role: roles[Math.floor(Math.random() * roles.length)],
                 initials: firstName[0] + lastName[0],
-                skills: studentSkills
+                skills: studentSkills,
+                isMock: true
             });
         }
         return students;
     };
 
-    const renderStudents = (students) => {
-        studentGrid.innerHTML = students.map((student, index) => `
+    /**
+     * SECTION 3: RENDERING LOGIC
+     */
+    const renderStudents = (real, mock) => {
+        const allStudents = [...real, ...mock];
+        studentGrid.innerHTML = allStudents.map((student, index) => `
             <div class="student-card" style="animation-delay: ${index * 0.1}s">
                 <div class="profile-image-container">
-                    <div class="profile-placeholder">${student.initials}</div>
+                    ${student.image 
+                        ? `<img src="${student.image}" alt="${student.name}" class="profile-image">`
+                        : `<div class="profile-placeholder">${student.initials}</div>`
+                    }
                 </div>
                 <h2>${student.name}</h2>
                 <span class="student-role">${student.role}</span>
@@ -43,16 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
-    const initialStudents = generateStudents(8);
-    renderStudents(initialStudents);
+    const mockStudents = generateMockStudents(8);
+    renderStudents(realStudents, mockStudents);
 
-    // Engagement Chart
+    /**
+     * SECTION 4: ENGAGEMENT CHART
+     */
     const ctx = document.getElementById('engagementChart').getContext('2d');
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
     gradient.addColorStop(1, 'rgba(192, 132, 252, 0)');
 
-    const engagementChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'line',
         data: {
             labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -72,19 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8' }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
-                }
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
             }
         }
     });
