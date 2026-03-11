@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workshop Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="dashboard-container">
+        <header>
+            <h1>AI Workshop Dashboard</h1>
+            <p id="current-task">Current Task: <span>Building UI Components</span></p>
+        </header>
+
+        <main>
+            <!-- Stats Section -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <h3>Students Active</h3>
+                    <p class="stat-value" id="students-count">42</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Workshop Progress</h3>
+                    <p class="stat-value" id="workshop-progress">65%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>AI Commands Run</h3>
+                    <p class="stat-value" id="ai-commands">128</p>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section">
+                <div class="chart-card">
+                    <h3>Workshop Activity Feed</h3>
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Created with ✨ <strong>Gemini CLI</strong> ✨</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
